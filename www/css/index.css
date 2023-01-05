@@ -1,0 +1,282 @@
+@import url('https://fonts.googleapis.com/css2?family=Oxygen&display=swap');
+
+* {
+    margin: 0;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Oxygen', sans-serif;
+    background-color: #F5F5F5;
+    display: flex;
+    flex-direction: row;
+}
+
+.content {
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+    overflow-y: auto;
+    background-color: #F5F5F5;
+    width: 100%;
+}
+
+.left > .title {
+    font-size: 2rem;
+    font-weight: 900;
+    color: #424242;
+    margin: 2rem;
+    margin-bottom: 4rem;
+}
+
+.left, .right {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.left > .balance {
+    margin-left: 2rem;
+    margin-right: 2rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.left > .balance > div {
+    display: flex;
+    gap: 1rem;
+    color: #424242;
+}
+
+.left > .balance > div > svg {
+    padding: 0.5rem;
+    width: 2rem;
+    background-color: white;
+    border-radius: 15px;
+}
+
+.left > .balance > div > .type {
+    display: flex;
+    flex-direction: column;
+}
+
+.left > .balance > div > .type > .label {
+    font-size: 0.8rem;
+}
+
+.left > .balance > div > .type > .amount {
+    font-size: 1.2rem;
+    font-weight: 900;
+}
+
+.left > .versus {
+    display: flex;
+    gap: 1rem;
+    margin-left: 2rem;
+    margin-right: 2rem;
+    margin-top: 1rem;
+}
+
+.left > .versus > div {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #ccc;
+    width: 100%;
+    border-radius: 15px;
+    background-color: white;
+}
+
+.left > .versus > div > svg {
+    width: 2rem;
+}
+
+.left > .versus > div > .type {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+}
+
+.left > .versus > div > .type > .label {
+    font-size: 0.8rem;
+    color: #424242;
+}
+
+.left > .versus > div > .type  > .amount {
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: #424242;
+}
+
+.left > .versus > div > .income {
+    color: #70f570;
+}
+
+.left > .versus > div > .spendings {
+    color: #d44a4a;
+}
+
+.left > .bills {
+    display: flex;
+    flex-direction: column;
+    margin-left: 2rem;
+    margin-right: 2rem;
+    margin-top: 1rem;
+}
+
+.left > .bills > .title {
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: #424242;
+}
+
+.left > .bills > .list {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    margin-top: 1rem;
+    width: 40vw;
+    overflow-x: scroll;
+    padding-bottom: 5px;
+}
+
+.left > .bills > .list > div {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 1rem;
+    min-width: 125px;
+}
+
+.left > .bills > .list > div > .label {
+    font-size: 0.8rem;
+    color: #424242;
+}
+
+.left > .bills > .list > div > .amount {
+    font-size: 1rem;
+    font-weight: 900;
+    color: #424242;
+}
+
+.left > .bills > .list > div > .due {
+    font-size: 1rem;
+    color: #424242;
+    white-space: nowrap;
+}
+
+::-webkit-scrollbar {
+    height: 6px;
+    width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #ccc;
+    -webkit-border-radius: 1ex;
+}
+
+::-webkit-scrollbar-corner {
+    background: #000;
+}
+
+.left > .transactions {
+    display: flex;
+    flex-direction: column;
+    margin-left: 2rem;
+    margin-right: 2rem;
+    margin-top: 1rem;
+}
+
+.left > .transactions > .title {
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: #424242;
+}
+
+.left > .transactions > .list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+    padding-bottom: 5px;
+}
+
+.left > .transactions > .list > div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 1rem;
+}
+
+.left > .transactions > .list > div > div {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    align-items: center;
+}
+
+.left > .transactions > .list > div > div > div {
+    display: flex;
+    flex-direction: column;
+}
+
+.transactions svg {
+    width: 1.5rem;
+    height: 1.5rem;
+    background-color: #F5F5F5;
+    border-radius: 15px;
+    padding: 0.5rem;
+}
+
+.left > .transactions > .list > div > div > div > .label {
+    font-size: 1rem;
+    color: #424242;
+    font-weight: 900;
+    text-overflow: ellipsis;
+    width: 200px;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.left > .transactions > .list > div > div > div > .date {
+    font-size: 0.8rem;
+    color: #424242;
+}
+
+.left > .transactions > .list > div > .amount {
+    font-size: 1rem;
+    font-weight: 900;
+    color: #424242;
+}
+
+@media (max-width: 768px) {
+    .content {
+        flex-direction: column;
+    }
+
+    .left > .bills > .list {
+        width: 100%;
+    }
+
+    .left > .balance > div {
+        border: 1px solid #ccc;
+        gap: 0;
+        padding: 1rem;
+        border-radius: 10px;
+        background-color: white;
+    }
+
+    .left > .balance > div > svg {
+        display: none;
+    }
+}
