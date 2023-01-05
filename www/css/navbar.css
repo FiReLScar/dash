@@ -70,6 +70,14 @@
     height: 1.5rem;
 }
 
+.x-wrapper {
+    display: none;
+}
+
+.menu {
+    display: none;
+}
+
 @media screen and (max-width: 768px) {
     body {
         display: flex;
@@ -77,5 +85,29 @@
     }
     .navbar {
         display: none;
+        height: 100vh;
+    }
+
+    .x {
+        display: block;
+        width: 2rem;
+        padding-right: 2rem;
+    }
+
+    .x-wrapper {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        margin-right: 4rem;
+        margin-top: 2rem;
+        width: 100%;
+    }
+
+    .menu {
+        display: block;
+        position: absolute;
+        top: 2rem;
+        right: 2rem;
+        width: 2rem;
     }
 }

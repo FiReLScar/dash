@@ -124,6 +124,14 @@ int main() {
     res->Send(compress(str));
   });
 
+  Server.Get("/js/mobile.js", [](Request* req, Response* res) {
+    res->SetHeader("Content-Encoding", "gzip");
+    res->SetHeader("Content-Type", "text/javascript; charset=UTF-8");
+    std::ifstream file("www/js/mobile.js");
+    std::string str((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+    res->Send(compress(str));
+  });
+
   Server.Get("/api/data", [](Request* req, Response* res) {
     if (!validate(req, res)) return;
     res->SetHeader("Content-Encoding", "gzip");

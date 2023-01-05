@@ -265,6 +265,10 @@ body {
         overflow-y: unset;
     }
 
+    .left {
+        padding-bottom: 2rem;
+    }
+
     .left > .bills > .list {
         width: 100%;
     }

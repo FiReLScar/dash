@@ -9,7 +9,13 @@
         <link rel="stylesheet" href="/css/navbar.css">
     </head>
     <body>
-        <div class="navbar">
+        <div class="navbar" id="navbar">
+            <div class="x-wrapper">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" id="close" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="x">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </div>
+
             <div class="profile">
                 <img src="/profile.png" class="pfp"/>
                 <span class="hello">Welcome back,</span>
@@ -50,7 +56,7 @@
                 </a>
             </div>
         </div>
-        <div class="content">
+        <div class="content" id="content">
             <div class="left">
                 <span class="title">Summary</span>
                 <div class="balance">
@@ -151,6 +157,10 @@
                 
             </div>
         </div>
+        <svg xmlns="http://www.w3.org/2000/svg" id="menu" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="menu">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+        </svg>
+        <script src="/js/mobile.js"></script>
         <script src="/js/bank.js"></script>
     </body>
 </html>
