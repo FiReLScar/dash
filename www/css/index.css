@@ -243,7 +243,7 @@ body {
     color: #424242;
     font-weight: 900;
     text-overflow: ellipsis;
-    width: 200px;
+    max-width: 200px;
     overflow: hidden;
     white-space: nowrap;
 }
@@ -262,6 +262,7 @@ body {
 @media (max-width: 768px) {
     .content {
         flex-direction: column;
+        overflow-y: unset;
     }
 
     .left > .bills > .list {
@@ -278,5 +279,9 @@ body {
 
     .left > .balance > div > svg {
         display: none;
+    }
+
+    .left > .transactions > .list > div > div > div > .label {
+        max-width: 100px;
     }
 }
