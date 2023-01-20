@@ -4,6 +4,9 @@
 #include <vector>
 #include <map>
 #include <zstr.hpp>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
 
 std::vector<std::string> split(std::string data, std::string delimiter) {
   std::vector<std::string> result;
@@ -72,6 +75,35 @@ bool validate(Request* req, Response* res) {
   return true;
 }
 
+void SendMessageToLights(std::string message) {
+  int sock = 0, valread, client_fd;
+  struct sockaddr_in serv_addr;
+  char buffer[1024] = {0};
+  if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+    std::cout << "Bro how do you not have permission to start a client?" << std::endl;
+    return;
+  }
+  serv_addr.sin_family = AF_INET;
+  serv_addr.sin_port = htons(1337);
+  if(inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr)<=0) {
+    std::cout << "Are you stupid? Did you even start the server?" << std::endl;
+    return;
+  }
+  if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
+    std::cout << "Failed to connect to Lights API" << std::endl;
+    return;
+  }
+  send(sock, message.c_str(), message.length(), 0);
+  close(sock);
+}
+
+bool isFloat(std::string myString) {
+    std::istringstream iss(myString);
+    float f;
+    iss >> std::noskipws >> f;
+    return iss.eof() && !iss.fail(); 
+}
+
 int main() {
   std::ifstream keys("Keys");
   std::string key;
@@ -100,10 +132,29 @@ int main() {
     res->Send(compress(str));
   });
 
+  Server.Get("/iot", [](Request* req, Response* res) {
+    if (!validate(req, res)) return;
+    std::string key = getCookie(req->GetHeader("cookie"), "key");
+    res->SetHeader("Content-Encoding", "gzip");
+    res->SetHeader("Content-Type", "text/html; charset=UTF-8");
+    std::ifstream file("www/iot.html");
+    std::string str((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+    str = replace(str, "[name]", keyList[key]);
+    res->Send(compress(str));
+  });
+
   Server.Get("/css/index.css", [](Request* req, Response* res) {
     res->SetHeader("Content-Encoding", "gzip");
     res->SetHeader("Content-Type", "text/css; charset=UTF-8");
     std::ifstream file("www/css/index.css");
+    std::string str((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+    res->Send(compress(str));
+  });
+
+  Server.Get("/css/global.css", [](Request* req, Response* res) {
+    res->SetHeader("Content-Encoding", "gzip");
+    res->SetHeader("Content-Type", "text/css; charset=UTF-8");
+    std::ifstream file("www/css/global.css");
     std::string str((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
     res->Send(compress(str));
   });
@@ -141,6 +192,48 @@ int main() {
     res->Send(compress(str));
   });
 
+  Server.Get("/api/iot/{data}", [](Request* req, Response* res) {
+    if (!validate(req, res)) return;
+    std::string data = req->GetQuery("data");
+    if (data == "on") {
+      SendMessageToLights("On");
+    } else if (data == "off") {
+      SendMessageToLights("Off");
+    } else if (data.substr(0, 5) == "Color") {
+      if (data.substr(6).find(",") == std::string::npos) {
+        res->SetHeader("Content-Encoding", "gzip");
+        res->SetHeader("Content-Type", "application/json; charset=UTF-8");
+        res->Send(compress("{\"status\": \"error\"}"));
+        return;
+      }
+      std::vector<std::string> hsv = split(data.substr(6), ",");
+      if (hsv.size() != 3) {
+        res->SetHeader("Content-Encoding", "gzip");
+        res->SetHeader("Content-Type", "application/json; charset=UTF-8");
+        res->Send(compress("{\"status\": \"error\"}"));
+        return;
+      }
+
+      for (int i = 0; i < 3; i++) {
+        if (!isFloat(hsv[i])) {
+          res->SetHeader("Content-Encoding", "gzip");
+          res->SetHeader("Content-Type", "application/json; charset=UTF-8");
+          res->Send(compress("{\"status\": \"error\"}"));
+          return;
+        }
+      }
+      SendMessageToLights("Color: " + hsv[0] + "," + hsv[1] + "," + hsv[2]);
+    } else {
+      res->SetHeader("Content-Encoding", "gzip");
+      res->SetHeader("Content-Type", "application/json; charset=UTF-8");
+      res->Send(compress("{\"status\": \"error\"}"));
+      return;
+    }
+    res->SetHeader("Content-Encoding", "gzip");
+    res->SetHeader("Content-Type", "application/json; charset=UTF-8");
+    res->Send(compress("{\"status\": \"ok\"}"));
+  });
+
   Server.Get("/profile.png", [](Request* req, Response* res) {
     if (!validate(req, res)) return;
     std::string key = getCookie(req->GetHeader("cookie"), "key");
@@ -161,7 +254,7 @@ int main() {
       res->Send(compress(str));
       return;
     }
-    res->SetHeader("Set-Cookie", "key="+key+"; Path=/");
+    res->SetHeader("Set-Cookie", "key="+key+"; Path=/; Expires=Thu, 01 Jan 2030 00:00:00 GMT");
     res->SetStatus("303 See Other");
     res->SetHeader("Location", "/");
     res->Send("");
