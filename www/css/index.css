@@ -1,3 +1,7 @@
+.content {
+    flex-direction: row;
+}
+
 .left > .title {
     font-size: 2rem;
     font-weight: 900;

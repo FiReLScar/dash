@@ -41,7 +41,7 @@
                     </svg>
                     <span class="link">Transactions</span>
                 </a>
-                <a href="/bills">
+                <a href="/bills" class="active">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z" />
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6z" />
@@ -54,7 +54,7 @@
                     </svg>                      
                     <span class="link">Schedule</span>
                 </a>
-                <a href="/iot" class="active">
+                <a href="/iot">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m3.75 2.383a14.406 14.406 0 01-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 10-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" />
                     </svg>
@@ -63,76 +63,15 @@
             </div>
         </div>
         <div class="content" id="content">
-            <span class="title">IOT</span>
-            <div class="center">
-                <div id="pickr"></div>
-                <button id="on">On</button>
-                <button id="off">Off</button>
+            <span class="title">Bills</span>
+            <div class="bills" id="bills">
+
             </div>
         </div>
         <svg xmlns="http://www.w3.org/2000/svg" id="menu" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="menu">
             <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
         </svg>
-        
-        <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/nano.min.css"/>
-        <script>
-            const pickr = Pickr.create({
-                el: '#pickr',
-                theme: 'nano',
-                default: '#ff0000',
-
-                components: {
-                    preview: true,
-                    hue: true,
-                }
-            }).on('changestop', (source, instance) => {
-                let hsv = instance._color.toHSVA()
-                console.log(hsv)
-                let request = fetch('/api/iot/Color:' + hsv[0] + ',' + hsv[1] + ',' + hsv[2])
-            })
-        </script>
-
-        <script>
-            document.getElementById('on').addEventListener('click', () => {
-                let request = fetch('/api/iot/on')
-            })
-    
-            document.getElementById('off').addEventListener('click', () => {
-                let request = fetch('/api/iot/off')
-            })
-
-            document.querySelector('.pickr').style.marginBottom = document.querySelector('.pcr-app').clientHeight + 25 + 'px'
-            document.querySelector('#on').style.width = document.querySelector('.pcr-selection').clientWidth + 'px'
-            document.querySelector('#off').style.width = document.querySelector('.pcr-selection').clientWidth + 'px'
-        </script>
-
-        <style>
-            .pcr-app {
-                visibility: visible;
-                opacity: 1;
-                box-shadow: none;
-                border-radius: 10px;
-                position: absolute;
-            }
-
-            .pcr-button {
-                visibility: hidden;
-            }
-
-            .pcr-color-palette {
-                border-radius: 10px;
-            }
-
-            button {
-                padding: .5rem;
-                border-radius: 5px;
-                border: 0;
-                background: white;
-                margin-bottom: 10px;
-                color: #242424;
-            }
-        </style>
         <script src="/js/mobile.js"></script>
+        <script src="/js/bills.js"></script>
     </body>
 </html>

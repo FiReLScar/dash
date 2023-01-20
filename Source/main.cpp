@@ -113,9 +113,22 @@ int main() {
     std::string value = key.substr(key.find("=") + 1);
     keyList[name] = value;
   }
+
+  // Bills DB
+  {std::ifstream BillsDB("Bills");
+  if (!BillsDB.is_open()) {
+    std::ofstream bills("Bills");
+    bills.close();
+  }
+  BillsDB.close();}
+
   Link Server(3000);
   Server.Error(404, [](Request* req, Response* res) {
-    res->Send("404 Not Found");
+    res->SetHeader("Content-Encoding", "gzip");
+    res->SetHeader("Content-Type", "text/html; charset=UTF-8");
+    std::ifstream file("www/404.html");
+    std::string str((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+    res->Send(compress(str));
   });
   Server.Default([](Request* req, Response* res) {
     res->Error(404);
@@ -138,6 +151,17 @@ int main() {
     res->SetHeader("Content-Encoding", "gzip");
     res->SetHeader("Content-Type", "text/html; charset=UTF-8");
     std::ifstream file("www/iot.html");
+    std::string str((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+    str = replace(str, "[name]", keyList[key]);
+    res->Send(compress(str));
+  });
+
+  Server.Get("/bills", [](Request* req, Response* res) {
+    if (!validate(req, res)) return;
+    std::string key = getCookie(req->GetHeader("cookie"), "key");
+    res->SetHeader("Content-Encoding", "gzip");
+    res->SetHeader("Content-Type", "text/html; charset=UTF-8");
+    std::ifstream file("www/bills.html");
     std::string str((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
     str = replace(str, "[name]", keyList[key]);
     res->Send(compress(str));
@@ -171,6 +195,14 @@ int main() {
     res->SetHeader("Content-Encoding", "gzip");
     res->SetHeader("Content-Type", "text/javascript; charset=UTF-8");
     std::ifstream file("www/js/bank.js");
+    std::string str((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+    res->Send(compress(str));
+  });
+
+  Server.Get("/js/bills.js", [](Request* req, Response* res) {
+    res->SetHeader("Content-Encoding", "gzip");
+    res->SetHeader("Content-Type", "text/javascript; charset=UTF-8");
+    std::ifstream file("www/js/bills.js");
     std::string str((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
     res->Send(compress(str));
   });
@@ -232,6 +264,120 @@ int main() {
     res->SetHeader("Content-Encoding", "gzip");
     res->SetHeader("Content-Type", "application/json; charset=UTF-8");
     res->Send(compress("{\"status\": \"ok\"}"));
+  });
+
+  Server.Get("/api/bills/add", [](Request* req, Response* res) {
+    if (!validate(req, res)) return;
+    std::string name = req->GetQuery("name");
+    std::string amount = req->GetQuery("amount");
+    std::string frequency = req->GetQuery("frequency");
+    std::string started = req->GetQuery("started");
+
+    if (name == "" || amount == "" || frequency == "" || started == "" || !isFloat(amount) || !isFloat(started) || name.find(",") != std::string::npos) {
+      res->Send("error");
+      return;
+    }
+
+    if (frequency != "m" && frequency != "y" && frequency != "w" && frequency != "b") {
+      res->Send("error");
+      return;
+    }
+
+    std::ifstream read("Bills");
+    std::string line;
+    while (std::getline(read, line)) {
+      std::vector<std::string> data = split(line, ",");
+      if (data[0] == name) {
+        res->Send("error");
+        return;
+      }
+    }
+    read.close();
+    std::ofstream write("Bills", std::ios_base::app);
+    write << name << "," << amount << "," << frequency << "," << started << std::endl;
+    write.close();
+    res->Send("ok");
+  });
+
+  Server.Get("/api/bills/edit", [](Request* req, Response* res) {
+    if (!validate(req, res)) return;
+    std::string name = req->GetQuery("name");
+    std::string amount = req->GetQuery("amount");
+    std::string frequency = req->GetQuery("frequency");
+    std::string started = req->GetQuery("started");
+
+    if (name == "" || amount == "" || frequency == "" || started == "" || !isFloat(amount) || !isFloat(started) || name.find(",") != std::string::npos) {
+      res->Send("error");
+      return;
+    }
+
+    if (frequency != "m" && frequency != "y" && frequency != "w" && frequency != "b") {
+      res->Send("error");
+      return;
+    }
+
+    std::ifstream read("Bills");
+    std::string line;
+    std::string replacement = "";
+    bool found = false;
+    while (std::getline(read, line)) {
+      std::vector<std::string> data = split(line, ",");
+      if (data[0] == name) {
+        found = true;
+        replacement += data[0] + "," + amount + "," + frequency + "," + started + "\n";
+        continue;
+      }
+    }
+    if (!found) {
+      res->Send("error");
+      return;
+    }
+    read.close();
+    std::ofstream write("Bills");
+    write << replacement;
+    write.close();
+    res->Send("ok");
+  });
+
+  Server.Get("/api/bills/remove", [](Request* req, Response* res) {
+    if (!validate(req, res)) return;
+    std::string name = req->GetQuery("name");
+
+    if (name == "" || name.find(",") != std::string::npos) {
+      res->Send("error");
+      return;
+    }
+
+    std::ifstream read("Bills");
+    std::string line;
+    std::string replacement = "";
+    bool found = false;
+    while (std::getline(read, line)) {
+      std::vector<std::string> data = split(line, ",");
+      if (data[0] == name) {
+        found = true;
+        continue;
+      }
+      replacement += line + "\n";
+    }
+    read.close();
+    if (!found) {
+      res->Send("error");
+      return;
+    }
+    std::ofstream write("Bills");
+    write << replacement;
+    write.close();
+    res->Send("ok");
+  });
+
+  Server.Get("/api/bills/get", [](Request* req, Response* res) {
+    if (!validate(req, res)) return;
+    std::ifstream read("Bills");
+    std::string data((std::istreambuf_iterator<char>(read)), std::istreambuf_iterator<char>());
+    res->SetHeader("Content-Encoding", "gzip");
+    res->SetHeader("Content-Type", "text/text; charset=UTF-8");
+    res->Send(compress(data));
   });
 
   Server.Get("/profile.png", [](Request* req, Response* res) {
