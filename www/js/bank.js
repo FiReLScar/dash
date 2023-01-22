@@ -1,10 +1,9 @@
-(async () => {
+let UpdateData = async () => {
     let bank = await fetch('/api/data')
     bank = await bank.json()
-    console.log(bank)
-    document.getElementById('total-bal').innerHTML = "$" + (parseFloat(bank.Balance.Accounts[1].bal.substring(1)) + parseFloat(bank.Balance.Accounts[0].bal.substring(1))).toLocaleString()
-    document.getElementById('checkings-bal').innerHTML = bank.Balance.Accounts[0].bal.toLocaleString()
-    document.getElementById('savings-bal').innerHTML = bank.Balance.Accounts[1].bal.toLocaleString()
+    document.getElementById('total-bal').innerText = (parseFloat(bank.Balance.Accounts[1].bal.substring(1)) + parseFloat(bank.Balance.Accounts[0].bal.substring(1))).toLocaleString('en-US', {style:"currency", currency:"USD"})
+    document.getElementById('checkings-bal').innerText = parseFloat(bank.Balance.Accounts[0].bal.substring(1)).toLocaleString('en-US', {style:"currency", currency:"USD"})
+    document.getElementById('savings-bal').innerText = parseFloat(bank.Balance.Accounts[1].bal.substring(1)).toLocaleString('en-US', {style:"currency", currency:"USD"})
 
     let income = 0, expenses = 0
 
@@ -16,8 +15,8 @@
         }
     }
 
-    document.getElementById('income').innerHTML = "$" + income.toLocaleString()
-    document.getElementById('expenses').innerHTML = "$" + expenses.toLocaleString()
+    document.getElementById('income').innerText = income.toLocaleString('en-US', {style:"currency", currency:"USD"})
+    document.getElementById('expenses').innerText = expenses.toLocaleString('en-US', {style:"currency", currency:"USD"})
 
     let plus = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" style="color: #70f570" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>'
     let minus = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" style="color: #d44a4a" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15" /></svg>'
@@ -26,6 +25,8 @@
 
     let t = document.getElementById('transactions')
 
+    t.innerHTML = ''
+
     for (let i=0; i<3; i++) {
         let item = bank.History[0][i]
         let div = document.createElement('div')
@@ -33,10 +34,10 @@
         div2.innerHTML = (item["money"][0] == '-' ? minus : plus)
         let div3 = document.createElement('div')
         let label = document.createElement('span')
-        label.innerHTML = item["desc"]
+        label.innerText = item["desc"]
         label.className = "label"
         let date = document.createElement('span')
-        date.innerHTML = item["date"]
+        date.innerText = item["date"]
         date.className = "date"
         div3.appendChild(label)
         div3.appendChild(date)
@@ -45,7 +46,7 @@
 
         let div4 = document.createElement('div')
         let amount = document.createElement('span')
-        amount.innerHTML = item["money"]
+        amount.innerText = item["money"]
         amount.className = "amount"
         div4.appendChild(amount)
         div4.innerHTML += (item["pending"] == true ? pending : check)
@@ -53,4 +54,7 @@
 
         t.appendChild(div)
     }
-})()
+}
+
+UpdateData()
+setInterval(UpdateData, 1000)
