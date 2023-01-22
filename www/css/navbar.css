@@ -4,6 +4,7 @@
     align-items: center;
     background-color: white;
     justify-content: space-between;
+    z-index: 100;
 }
 
 .navbar > .profile {
@@ -70,7 +71,7 @@
     height: 1.5rem;
 }
 
-.x-wrapper {
+.x {
     display: none;
 }
 
@@ -89,18 +90,11 @@
     }
 
     .x {
+        position: absolute;
+        top: 2rem;
+        right: 2rem;
         display: block;
         width: 2rem;
-        padding-right: 2rem;
-    }
-
-    .x-wrapper {
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-end;
-        margin-right: 4rem;
-        margin-top: 2rem;
-        width: 100%;
     }
 
     .menu {
